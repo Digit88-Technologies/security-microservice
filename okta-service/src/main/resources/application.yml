@@ -1,0 +1,49 @@
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          okta:
+            assertingparty:
+              metadata-uri: https://dev-02015639.okta.com/app/exkaqr35ybCRWWGfK5d7/sso/saml/metadata
+            signing:
+              credentials:
+                - private-key-location: classpath:local.key
+                  certificate-location: classpath:local.crt
+              singlelogout:
+                binding: POST
+                response-url: "{baseUrl}/logout/saml2/slo"
+  application:
+    name: okta-service
+#  oauth2:
+#   client:
+#    registration:
+#     okta:
+#      client-id: 0oaaqutdyvaLPKDkq5d7
+#      client-secret: Xyq8ISLzXF-w9HPLWicPLma4j8BL_P-ObiK74L16oCh1OiL9dllS-fOvRs1Kah3U
+#      client-authentication-method: basic
+#      authorization-grant-type: authorization_code
+#      redirect-uri-template: http://localhost:8080/login/oauth2/code/okta
+#      scope: openid,profile,email
+#      authorization-uri: https://dev-02015639.okta.com/oauth2/v1/authorize
+#      token-uri: https://dev-02015639.okta.com/oauth2/v1/token
+#      user-info-uri: https://dev-02015639.okta.com/oauth2/v1/userinfo
+#      user-name-attribute-name: sub
+#      jwk-set-uri: https://dev-02015639.okta.com/oauth2/v1/keys
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8762/eureka
+    instance:
+    preferIpAddress: true
+
+okta :
+  oauth2 :
+    clientId : 0oaaqutdyvaLPKDkq5d7
+    clientSecret : Xyq8ISLzXF-w9HPLWicPLma4j8BL_P-ObiK74L16oCh1OiL9dllS-fOvRs1Kah3U
+    issuer : https://dev-02015639.okta.com/oauth2/default
+    redirect_uri : /login/oauth2/code/okta
+
+server :
+  port : 8080

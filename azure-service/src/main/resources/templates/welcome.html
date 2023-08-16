@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Azure AD</title>
+</head>
+<body>
+<h1>Welcome to Azure AD, [[${name}]]!</h1>
+<p>Your attributes are:</p>
+<ul>
+    <li th:each="entry : ${attributes}">
+        [[${entry.key}]]: [[${entry.value}]]
+    </li>
+</ul>
+</body>
+</html>

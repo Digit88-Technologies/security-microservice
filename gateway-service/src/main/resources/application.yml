@@ -1,0 +1,38 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8762/eureka
+    instance:
+    preferIpAddress: true
+server :
+  port : 8088
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: OKTA-SERVICE
+          uri: lb://OKTA-SERVICE/api/okta/login
+          predicates:
+            - Path=/api/okta/**
+        - id: AZURE-SERVICE
+          uri: lb://AZURE-SERVICE/api/azure/login
+          predicates:
+            - Path=/api/azure/**
+
+
+logging :
+  level :
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+          route :
+            routeDefinitionLocator : INFO
+
+
+

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>Spring Boot and SAML</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #3498db, #2c3e50);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            color: #333333;
+        }
+        h1 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666666;
+            margin-bottom: 8px;
+        }
+        dl {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        dt {
+            font-weight: bold;
+            color: #333333;
+            margin-top: 10px;
+        }
+        dd {
+            color: #666666;
+            margin-bottom: 15px;
+        }
+        #logout {
+            padding: 10px 25px;
+            background-color: #e74c3c;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #logout:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome</h1>
+    <p>You are successfully logged in as <span sec:authentication="name"></span></p>
+    <p>Your email address is <span th:text="${emailAddress}"></span>.</p>
+    <p>Your authorities are <span sec:authentication="authorities"></span>.</p>
+    <h2>Your Attributes</h2>
+    <dl th:each="userAttribute : ${userAttributes}">
+        <dt th:text="${userAttribute.key}"></dt>
+        <dd th:text="${userAttribute.value}"></dd>
+    </dl>
+    <form th:action="@{/logout}" method="post">
+        <button id="logout" type="submit">Logout</button>
+    </form>
+</div>
+
+</body>
+</html>
