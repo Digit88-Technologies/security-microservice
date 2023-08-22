@@ -21,7 +21,7 @@ public class OAuth2Configuration {
                 .clientSecret("Xyq8ISLzXF-w9HPLWicPLma4j8BL_P-ObiK74L16oCh1OiL9dllS-fOvRs1Kah3U")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) // Use the enum directly
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("http://localhost:8080/login/oauth2/code/okta")
+                .redirectUri("http://www.youtube.com/")
                 .scope("openid", "profile", "email")
                 .authorizationUri("https://dev-02015639.okta.com/oauth2/v1/authorize")
                 .tokenUri("https://dev-02015639.okta.com/oauth2/v1/token")
