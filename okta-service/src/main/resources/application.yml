@@ -43,7 +43,7 @@ okta :
     clientId : 0oaaqutdyvaLPKDkq5d7
     clientSecret : Xyq8ISLzXF-w9HPLWicPLma4j8BL_P-ObiK74L16oCh1OiL9dllS-fOvRs1Kah3U
     issuer : https://dev-02015639.okta.com/oauth2/default
-    redirect_uri : http://www.youtube.com/
+    redirect_uri : /login/oauth2/code/okta
 
 server :
   port : 8080

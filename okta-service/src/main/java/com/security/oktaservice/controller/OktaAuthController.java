@@ -44,7 +44,7 @@ public class OktaAuthController {
 //                    null;
 //            model.addAttribute("emailAddress", email);
 //
-            String principalName = principal.getName();
+//            String principalName = principal.getName();
 
         } catch (Exception e) {
             e.printStackTrace();

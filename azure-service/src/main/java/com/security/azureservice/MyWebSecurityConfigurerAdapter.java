@@ -1,4 +1,4 @@
-package com.security.oktaservice.configuration;
+package com.security.azureservice;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
@@ -6,11 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -23,18 +18,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.*;
 
-
 @Configuration
-public class OAuth2Configuration {
-
-
+public class MyWebSecurityConfigurerAdapter {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // all endpoints require authentication
         http.authorizeRequests()
-                .requestMatchers("/api/okta/**").permitAll();
-//                .requestMatchers("/api/okta/**").authenticated();
+//                .requestMatchers("/api/azure/**").permitAll();
+                .requestMatchers("/api/azure/**").authenticated();
 //                .anyRequest().authenticated();
 
         // configure a custom authentication manager resolver
@@ -43,20 +35,95 @@ public class OAuth2Configuration {
 
         return http.build();
     }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//
+//        // all endpoints require authentication
+//        http.authorizeRequests().anyRequest().authenticated();
+//
+//        // configure a custom authentication manager resolver
+////        http.oauth2ResourceServer().authenticationManagerResolver(customAuthenticationManager());
+//        http.oauth2ResourceServer().authenticationManagerResolver(customAuthenticationManagerResolver());
+//
+//    }
 
-    AuthenticationManagerResolver<HttpServletRequest> resolver() {
 
-        return request -> {
-            if (request.getHeader("ProviderType").matches("okta")) {
-                System.out.println("Inside Okta Custom Resolver");
+    //Multiple Auth Managers are configured here in below method
 
-                return oktaJwt();
-            }
-            System.out.println("Inside Azure Custom Resolver");
 
-            return azureJwt();
-        };
-    }
+
+//        AuthenticationManagerResolver<HttpServletRequest> customAuthenticationManagerResolver() {
+//
+//            LinkedHashMap<RequestMatcher, AuthenticationManager> authenticationManagers = new LinkedHashMap<>();
+//
+//            System.out.println("Inside Custom Resolver");
+//
+//
+//        // Adding multiple authentication managers for different use cases
+//
+////        RequestMatcher azureMatcher = new AntPathRequestMatcher("/azure/**");
+//
+//        List<String> readMethod = Arrays.asList("HEAD", "GET", "OPTIONS", "POST", "PUT", "DELETE");
+//        RequestMatcher readMethodRequestMatcher = request -> readMethod.contains(request.getMethod());
+//        RequestMatcher azureMatcher = new RequestHeaderRequestMatcher("ProviderType", "azure");
+//        RequestMatcher finalAzureMatcher = new AndRequestMatcher(
+//                azureMatcher,
+//                readMethodRequestMatcher
+//        );
+//
+//        authenticationManagers.put(finalAzureMatcher, azureJwt());
+//
+////        RequestMatcher oktaMatcher = new AntPathRequestMatcher("/okta/**");
+//        RequestMatcher oktaMatcher = new RequestHeaderRequestMatcher("ProviderType", "okta");
+//        RequestMatcher finalOktaMatcher = new AndRequestMatcher(
+//                oktaMatcher,
+//                readMethodRequestMatcher
+//        );
+//        authenticationManagers.put(finalOktaMatcher, oktaJwt()); // You can adjust this to use the correct AuthenticationManager
+//
+//            return new
+//        }
+
+        //new test resolver
+        AuthenticationManagerResolver<HttpServletRequest> resolver() {
+
+            return request -> {
+                if (request.getHeader("ProviderType").matches("okta")) {
+
+                    return oktaJwt();
+                }
+                System.out.println("Inside Custom Resolver");
+
+                return azureJwt();
+            };
+        }
+
+        //end test resolver
+
+
+//    private AuthenticationManagerResolver<HttpServletRequest> azureAuthenticationManager() {
+//        LinkedHashMap<RequestMatcher, AuthenticationManager> authenticationManagers = new LinkedHashMap<>();
+//
+//        // USE JWT tokens (locally validated) to validate HEAD, GET, and OPTIONS requests
+//        List<String> readMethod = Arrays.asList("HEAD", "GET", "OPTIONS");
+//        RequestMatcher readMethodRequestMatcher = request -> readMethod.contains(request.getMethod());
+//        authenticationManagers.put(readMethodRequestMatcher, azureJwt());
+//
+//        // all other requests will use opaque tokens (remotely validated)
+//        return new RequestMatchingAuthenticationManagerResolver(authenticationManagers);    }
+//
+//
+//    AuthenticationManagerResolver<HttpServletRequest> customAuthenticationManager() {
+//        LinkedHashMap<RequestMatcher, AuthenticationManager> authenticationManagers = new LinkedHashMap<>();
+//
+//        // USE JWT tokens (locally validated) to validate HEAD, GET, and OPTIONS requests
+//        List<String> readMethod = Arrays.asList("HEAD", "GET", "OPTIONS");
+//        RequestMatcher readMethodRequestMatcher = request -> readMethod.contains(request.getMethod());
+//        authenticationManagers.put(readMethodRequestMatcher, jwt());
+//
+//        // all other requests will use opaque tokens (remotely validated)
+//        return new RequestMatchingAuthenticationManagerResolver(authenticationManagers);
+//    }
 
     AuthenticationManager azureJwt() {
         // this is the keys endpoint for okta
@@ -119,29 +186,5 @@ public class OAuth2Configuration {
         JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
         authenticationProvider.setJwtAuthenticationConverter(new JwtBearerTokenAuthenticationConverter());
         return authenticationProvider::authenticate;
-    }
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId("okta")
-                .clientId("0oaaqutdyvaLPKDkq5d7")
-                .clientSecret("Xyq8ISLzXF-w9HPLWicPLma4j8BL_P-ObiK74L16oCh1OiL9dllS-fOvRs1Kah3U")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) // Use the enum directly
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("http://localhost:8080/login/oauth2/code/okta")
-                .scope("openid", "profile", "email")
-                .authorizationUri("https://dev-02015639.okta.com/oauth2/v1/authorize")
-                .tokenUri("https://dev-02015639.okta.com/oauth2/v1/token")
-                .userInfoUri("https://dev-02015639.okta.com/oauth2/v1/userinfo")
-                .userNameAttributeName("sub")
-                .jwkSetUri("https://dev-02015639.okta.com/oauth2/v1/keys")
-                .clientName("Okta")
-                .build();
-
-        return new InMemoryClientRegistrationRepository(clientRegistration);
-    }
-
-    @Bean
-    public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
-        return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
     }
 }
